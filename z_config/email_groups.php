@@ -6,8 +6,13 @@
 // desc: I need access to this is I can't instiate API
 // *****************************************************
 
+//	const SOFTWARE = 'victor.venning@gmail.com';
+//	const HARDWARE = 'victor.venning@gmail.com';
+//	const BUSINESS = 'victor.venning@gmail.com';
+
 const SOFTWARE = 'victor.venning@gmail.com';
 const HARDWARE = 'victor.venning@gmail.com';
 const BUSINESS = 'victor.venning@gmail.com';
+
 
 ?>

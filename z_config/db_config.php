@@ -1,11 +1,10 @@
 <?php
 // ***********************************************************
 // name: api_config_api.php
-// date: 2018-05-29
+// date: 2019-01-29
 // auth: vvenning
 // desc: trustsecurenow api
 // *****************************************************
-// 2011/08/01		VAV		Re-purposed for Medicine Show project
 
 //  DB credntials local
 	const DB_HOST_LOCAL	= 'localhost';
