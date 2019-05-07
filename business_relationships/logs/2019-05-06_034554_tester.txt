@@ -1,3 +1,0 @@
-2019-05-06 03:45:54 - partner: ABC RUnaway, client: ABC Runaway
-2019-05-06 03:45:54 - { "partner": "ABC RUnaway", "client": "ABC Runaway", "users": []}
-

@@ -671,15 +671,15 @@ class m_users implements databaseModel
 */
 
 
-		if(isset($this->password           { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->password, 'password');  }
-		if(isset($this->password_old       { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->password_old, 'password_old');  }
+		if(isset($this->password))         { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->password, 'password');  }
+		if(isset($this->password_old))     { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->password_old, 'password_old');  }
 		
 		if(isset($this->first_name))       { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->first_name, 'first_name'); }
 		if(isset($this->lasst_name))       { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->last_name, 'last_name'); }
 		if(isset($this->email))            { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->email, 'email'); }
 
 		if(isset($this->screen_name))      { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->screen_name, 'screen_name');  }
-        if(isset($this->job function))     { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->job_function, 'job_function');  }
+    //  if(isset($this->job_function))     { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->job_function, 'job_function');  }
 		
 		
 		if(isset($this->phone_number))     { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->phone_number, 'phone_number'); }
