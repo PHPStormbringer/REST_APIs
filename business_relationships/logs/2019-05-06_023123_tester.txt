@@ -1,0 +1,7 @@
+2019-05-06 02:31:23 - partner: ABC RUnaway, client: ABC Runaway
+2019-05-06 02:31:23 - { "partner": "ABC RUnaway", "client": "ABC Runaway", "users": [
+{"mjones@test.com": "Prepare failed: (1054) Unknown column 'tokenhash' in 'field list'.  INSERT: mjones@test.com - mjones@test.com 2019-06-05 02:31:23
+"},
+{"fsmith@test.com": "Prepare failed: (1054) Unknown column 'tokenhash' in 'field list'.  INSERT: fsmith@test.com - fsmith@test.com 2019-06-05 02:31:23
+"}]}
+

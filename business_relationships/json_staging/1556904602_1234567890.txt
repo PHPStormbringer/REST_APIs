@@ -1,0 +1,16 @@
+{"client_id":"1234567890",
+"first_name":"Frank",
+"last_name":"Smith",
+"email":"fsmith@test.com",
+"screen_name":"Frank Smith",
+"job_function":"Writer",
+"phone_number":"111-222-3333",
+"phone_number_ext":"444",
+"cell_number":"555-666-7777",
+"address":"22 Hostetler Rd",
+"address2":"apt 4F",
+"city":"Kensington",
+"state":"CA",
+"zip":"00099",
+"link":"testlink.net"
+}

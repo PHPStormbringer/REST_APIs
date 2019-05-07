@@ -1,0 +1,7 @@
+2019-05-06 03:41:01 - partner: ABC RUnaway, client: ABC Runaway
+2019-05-06 03:41:01 - { "partner": "ABC RUnaway", "client": "ABC Runaway", "users": [
+{"mjones@test.com": Prepare failed: (1054) Unknown column 'AAD_client_id' in 'field list'.  UPDATE: mjones@test.com - mjones@test.com1557171661
+},
+{"fsmith@test.com": Prepare failed: (1054) Unknown column 'AAD_client_id' in 'field list'.  UPDATE: fsmith@test.com - fsmith@test.com1557171661
+}]}
+
