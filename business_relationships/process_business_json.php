@@ -10,11 +10,11 @@
 */
     require '../api_config/global_config.php';
 
-	require_once("tester.php");
+	require_once("entity_mgmt.php");
 
 	date_default_timezone_set('US/Eastern');
 
-	$objADSync = new tester;
+	$objADSync = new entity_mgmt;
 //	If this fails, log and email
 	if(!is_object($objADSync))
 	{

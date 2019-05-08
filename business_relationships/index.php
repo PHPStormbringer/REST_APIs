@@ -6,7 +6,7 @@
     desc: Landing point for API call.  Writes json to file.
 */
     require '../z_config/global_config.php';
-	require_once("tester.php");
+	require_once("entity_mgmt.php");
 
 	
 	date_default_timezone_set('US/Eastern');
@@ -34,8 +34,8 @@
 			if($arrPayload['stage_payload'] !== true)
 			{
 				
-				$obj_tester = new tester;
-				if(!is_object($obj_tester))
+				$obj_entity_mgmt = new entity_mgmt;
+				if(!is_object($obj_entity_mgmt))
 				{
 					include '../z_config/email_groups.php';
 					include '../z_tools/email4API.php';
@@ -43,7 +43,7 @@
 				//  log
 					$file_prefix = date("Y-m-d_hi_",time());
 
-					$txt  = date("Y-m-d h:i:s",time()).": 404 - Not Found.  Could not initialize tester model. The API is down.";
+					$txt  = date("Y-m-d h:i:s",time()).": 404 - Not Found.  Could not initialize entity_mgmt model. The API is down.";
 						
 					$myfile = fopen("logs/".$file_prefix."InitialFatalError.txt", "a") or die("Unable to open file!");
 					fwrite($myfile, $txt);
@@ -51,21 +51,21 @@
 
 				//	email
 					$email_address =  DEV_TEAM;
-					$subject = "TEST: tester is down";
+					$subject = "TEST: entity_mgmt is down";
 					$body = $txt;
 					email4API($email_address, $subject, $body);
 					die;
 				}
 
 			//	I got a string, send them a string
-				$obj_tester->json_payload = utf8_encode($json_payload); // 2019-02-08 1534 VVenning - utf8_encode entire file contents
+				$obj_entity_mgmt->json_payload = utf8_encode($json_payload); // 2019-02-08 1534 VVenning - utf8_encode entire file contents
 //				$content_prefix = date("Y-m-d_his",time());
 //				$txt  = $content_prefix.": file process init.".PHP_EOL;
-//				$txt .= print_r($obj_tester->json_payload, 1);
+//				$txt .= print_r($obj_entity_mgmt->json_payload, 1);
 //				$txt .= PHP_EOL.PHP_EOL;
 //				fwrite($myfile, $txt);
 
-				$obj_tester->process();
+				$obj_entity_mgmt->process();
 			}
 			else
 			{
