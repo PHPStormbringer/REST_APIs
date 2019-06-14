@@ -64,6 +64,8 @@
 //	user groups
     define("END_USERS","Members");
     define("MANAGERS","Managers");
+	
+	define("REST_API_DATABASE_ERROR_LOG_PATH","/REST_APIs/logs/database_error.txt");
 
 
 ?>

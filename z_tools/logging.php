@@ -10,7 +10,7 @@
 	date_default_timezone_set('US/Eastern');
     $the_time = date("Y-m-d h:i:s", time())." - ";
     
-    $logPointer = fopen($filepath, "a");
+    $logPointer = fopen($filepath, "a+");
     fwrite($logPointer, $the_time.$msg.PHP_EOL);
     fclose($logPointer);
 }

@@ -136,14 +136,8 @@ class tester
     {
         fclose($this->myfile);
         
-		if(ENV == "local")
-		{
-			$x = $_SERVER['DOCUMENT_ROOT']."/REST_APIs/business_relationships/logs/";
-		}
-		else
-		{
-			$x = $_SERVER['DOCUMENT_ROOT']."/business_relationships/logs/";
-		}
+        $x = $_SERVER['DOCUMENT_ROOT']."/business_relationships/logs/";
+
     //  $x = $x."\\";
         
         $x = $x.$this->file_prefix."tester.txt";
