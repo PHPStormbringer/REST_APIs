@@ -7,7 +7,15 @@ class db_cxn
    
     public $conn;
 
-    public function __construct($host)
+/*
+ *  name: __construct
+ *  desc: establish connection to database
+ *
+ *  @param $host string
+ *
+ *  @assign $this->conn
+ *
+ */	public function __construct($host)
     {   
 
         if($host=="dev")
@@ -55,16 +63,29 @@ class db_cxn
 	// ******************************************************************************************************
 	// Note:  Theoretically, you could split up connecting to MySQL and connecting to the db
 	// ******************************************************************************************************
-    public function make()
+    
+/*
+ *  name make
+ *  desc return connection object
+ *
+ *  @return object
+ *
+ */	public function make()
     {
 	// Create connection
        return $this->conn;
     }
 
-    public static function nuke($cxn)
+/*
+ *  name nuke
+ *  desc return connection object
+ *
+ *  @param $cxn
+ *
+ *  @return void
+ *
+ */	public static function nuke($cxn)
     {
         mysqli_close($cxn);
     }	
 }
-
-?>
