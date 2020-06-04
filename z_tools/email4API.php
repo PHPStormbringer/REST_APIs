@@ -23,13 +23,23 @@
     require 'PHPMailer/src/PHPMailer.php';
     require 'PHPMailer/src/SMTP.php';
 
-    require_once 'logging.php';
+    require_once 'logging.php'; 
 
 //	require_once($_SERVER["DOCUMENT_ROOT"].'/api_config/global_config.php');
 	require_once '../z_config/global_config.php';
 
-
-	function email4API($email_address, $subject, $body, $arrAttachments=null)
+/*
+ *  name: email4API
+ *  desc: send email messages from API
+ *
+ *  @param $email_address string
+ *  @param $subject string
+ *  @param $body string
+ *  @param $arrAttachments array
+ *
+ *  @return 200|string (on error)
+ * 
+ */ function email4API($email_address, $subject, $body, $arrAttachments=null)
 	{
 	//	echo $email_address."<br />";
 	//	echo $subject."<br />";
