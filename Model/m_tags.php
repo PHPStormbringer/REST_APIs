@@ -30,10 +30,12 @@ class m_tags
     //  
     }
 
-//  name: select_all
-//  date: 2019-03-15
-//  auth: VVenning
-//  desc: select_all for tags table
+/*
+ *  name: select_all
+ *  desc: select_all for tags table
+ *
+  *  @return array|error message to file
+ */
     public function select_all()
     {
         $sql  = "SELECT * FROM ".TAGS_TABLE;
@@ -63,11 +65,15 @@ class m_tags
         }
     }
 
+/*
+ *  name: select_by_id
+ *  desc: select_by_id for tags table
 
-//	name: select_by_id
-//  date: 2019-03-15
-//  auth: VVenning
-//  desc: select_by_id for tags table
+ *  @param $id int
+ *
+ *  @return array|error message to file
+ *
+ */
 	public function select_by_id($id=null)
 	{
         $sql  = "SELECT * FROM ".TAGS_TABLE." ";
@@ -110,11 +116,14 @@ class m_tags
         }
 	}
 
+/*
+ *  name: select_by_client_id
+ *  desc: select_by_event_id for tags table
 
-//  name: select_by_client_id
-//  date: 2019-03-15
-//  auth: VVenning
-//  desc: select_by_event_id for tags table
+ *  @param $client_id int
+ 
+ *  @return array|error message to file
+ */
     public function select_by_client_id($client_id=null)
     {
         $sql  = "SELECT * FROM ".TAGS_TABLE." ";
@@ -161,10 +170,16 @@ class m_tags
 
     }
 
-//  name: select_by_name
-//  date: 2019-03-18
-//  auth: VVenning
-//  desc: select_by_id for tags table
+/*
+ *  name: select_by_name
+ *  desc: select_by_id for tags table
+ 
+ *  @param $tag_name string
+ *  @param $client_id int
+ *
+ 
+ *  @return array|error message to file
+ */
     public function select_by_name($tag_name=null, $client_id=null)
     {
         $data = false;
@@ -200,11 +215,12 @@ class m_tags
         }
     }
 
-
-//	name: insert
-//	date: 2019-03-15
-//	auth: VVenning
-//	desc: insert for tags table
+/*
+ *  name: insert
+ *  desc: insert for tags table
+ *
+ *  @return int|error message to file
+ */
 	public function insert()
 	{
         $this->database_error = null;
@@ -235,29 +251,33 @@ class m_tags
         }
 	}
 
-//	name: update
-//	date: 
-//	auth: VVenning
-//	desc: 
+/*
+ *  name: update
+ *  desc: update
+ */
 	public function update($arrFieldsToBeUpdated=null)
 	{
     //  
 	}
 
-
-//	name: deactivate
-//	date: 
-//	auth: VVenning
-//	desc: 
+/*
+ *  name: deactivate
+ *  desc: flip active flag to false
+ */
 	public function deactivate()
 	{
 		//
 	}
 
-//	name: log_database_error
-//	date: 
-//	auth: VVenning
-//	desc: 
+/*
+ *  name: log_database_error
+ *  desc: log databse errors
+
+ *  @param $msg string
+ 
+ * @return void
+ *  desc: 
+ */
     public function log_database_error($msg)
     {
         $the_time = date("Y-m-d h:i:s", time());
@@ -269,5 +289,3 @@ class m_tags
         fclose($this->err_log);
     }
 }
-
-?>

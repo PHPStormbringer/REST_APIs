@@ -1,8 +1,6 @@
 ﻿<?php
 /* 
 	name: m_error_messages
-	date: 2019-01-07
-	auth: VVenning
 	desc: limited CRUD for error_messages table.  Create, Update, Retrieve, Deactivate
 
 */
@@ -16,20 +14,30 @@ class m_error_messages
 
     public $conn;
 
+/*
+ *
+ */
     public function __construct()
     {
-    //  
+
+
     }
 
+/*
+ *
+ */
     public function __destruct()
     {
-    //  
-    }
 
-//  name: select_all
-//  date: 2019-01-07
-//  auth: VVenning
-//  desc: select_all for error_messages table
+
+    }    
+
+/*
+ *  name: select_all
+ *  desc: select_all for error_messages table
+ 
+ *  @return array|error message to file
+ */
     public function select_all()
     {
 
@@ -64,18 +72,26 @@ class m_error_messages
         }
     }
 
+/*
+ *  name: select_by_id
+ *  desc: select_by_id for error_messages table
+ 
+ *  @param id - int
 
-//	name: select_by_id
-//  date: 2019-01-07
-//  auth: VVenning
-//  desc: select_by_id for error_messages table
+ *  @assign $this->email_to, 
+ *  @assign $this->subject
+ *  @assign $this->text
+ *  OR
+ *  @return array|error message to file
+
+ */
 	public function select_by_id($id=null)
 	{
         $this->email_to = "";
         $this->subject = "";
         $this->text = "";
 
-        $sql  = "SELECT * FROM ".ERROR_MESSAGSES_TABLE." ";
+        $sql  = "SELECT * FROM ".ERROR_MESSAGES_TABLE." ";
 
         if($id == null)
         {
@@ -122,5 +138,3 @@ class m_error_messages
         }
 	}
 }
-
-?>

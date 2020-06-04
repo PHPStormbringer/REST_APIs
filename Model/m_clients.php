@@ -6,374 +6,200 @@
     desc: basic CRUD for clients table
 //  2018-09-18 1003 VVenning - USe constant for clients table name
 //  2018-12-01 1500 VVenning - FInally wrote body of function
-//  2018-02-25 1400 VVenning - New function updateUserCount
 
 */
-class m_clients implements databaseModel
+class m_clients
 {
-	public $id;
-	public $partner_id; //
-	public $AAD_identifier;  // Azure Active Directory identifier for client
-	public $name; //
-	public $email; //
-	public $account_type;
-	public $active;
-	public $dont_send_email;
-	public $demo;
-	public $is_real;
-	public $is_eva;
-	public $is_dwba;
-	public $user_count;
-	public $phishing_count;
-	public $display_ra_org;
-	public $display_policy;
-	public $link;
-	public $logo;
-	public $logo_dir;
-	public $display_intro_video;
-	public $admin_account;
-	public $user_account;
-	public $details;
-	public $domain;
-	public $no_of_employees;
-	public $dwba_date;
-	public $file_key;
-	public $last_login;
-	public $risk_assessment_status;
-	public $created;
-	public $modified;
-	public $moodle_course_id;
-	public $moodle_course_name;
-	public $pax8_partner_id;
-	public $pax8_customer_id;
-	public $pax8_product_code;
-	public $pax8_subscription_id;
-	public $custom_policies;
-	public $demo_eva;
-	public $total_breaches;
-    public $auto_phish;
-    public $white_list;
-    public $one_time_campaign;
-    public $acknowledge_flag;
+    public $id;
+    public $partner_id; //
+    public $name; //
+    public $email; //
+    public $phone;
+    public $ext;
+    public $cell;
+    
+    public $address;
+    public $address2;
+    public $city;
+    public $state;
+    public $zip;
+    public $link;
+    
+    public $active;
+    public $logo;
+    public $white_label;
+    public $account_type;
+    public $dont_send_email;
+    public $employee_count;
 
-    public $conn;
+    public $created;
+    public $modified;
 
     public $last_inserted_id;
+    public $database_error;
+    public $conn;
+    
 
-	
-//	name: select;
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: slect for clients table
-	public function select()
-	{
-		//
-	}
-
-
-//	name: select_all
-//	date: 2018-08-04
-//	auth: VVenning
-//	desc: select_all for clients table
-	public function select_all($active=null, $dont_send_email=null)
-	{
-    //  2018-09-18 1003 VVenning - USe constant for clients table name
-        $sql  = "SELECT * FROM ".CLIENTS_TABLE." ";
-
-        if($active == null && $dont_send_email == null)
-        {
-        //  No WHERE clause
-        }
-        else
-        {
-            $sql .= "WHERE ";
-        }
-
-        if($active != null)
-        {
-            $sql .= "active = ? ";
-        }
-
-        if($dont_send_email === null )
-        {
-            //do nothing
-        }  
-        elseif($dont_send_email !== null && $active !== null)
-        {
-            $sql .= "AND dont_send_email = ? ";
-        }
-        else
-        {
-            $sql .= "dont_send_email = ? ";
-        }
-
-        $stmt = $this->conn->prepare($sql);
-
-        if($stmt)
-        {
-
-            if    ($active === null && dont_send_email === null)
-            {
-            //  bind no params
-            }
-            elseif($active !== null && $dont_send_email !== null)
-            {
-                $stmt->bind_param("ii", $active, $dont_send_email);
-            }
-            elseif($active !== null && $dont_send_email === null)
-            {
-                $stmt->bind_param("i", $active);
-            }
-            elseif($active === null && $dont_send_email !== null)
-            {
-                $stmt->bind_param("i", $dont_send_email);
-            }
-
-            $stmt->execute();
-
-            $res = $stmt->get_result();
-
-            $i = 0;
-            while ($row = $res->fetch_assoc()){
-          
-                $data[] = $row;
-
-                $i++;
-            }
-            
-            return $data;
-            
-            $stmt->close();
-
-            
-        }
-        else
-        {
-           $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-            $txt = "Failed prepare statement to select all user records. - ".date("Y-d-m h:i:s", time()).PHP_EOL;
-
-            fwrite($this->myfile, $txt);
-            
-            fclose($this->myfile);
-        }
-	}
-
-//  name: select_byID
-//  date: 2018-05-29
-//  auth: VVenning
-//  desc: select byt unique id for clients table
-//  param: unique id
-//  2018-12-01 1500 VVenning - FInally wrote body of function
-    public function select_byID($id)
+/*
+ *
+ */
+    public function __construct()
     {
-        $stmt = $this->conn->prepare("SELECT * FROM ".CLIENTS_TABLE." WHERE id = ?");
 
-        if(!$stmt)
-        {            
-            $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
 
-            $txt = "Failed prepare statement to select client record by id - ".$id." - ".date("Y-d-m h:i:s", time()).PHP_EOL;
-            
-            fwrite($this->myfile, $txt);
-            fclose($this->myfile);
-        }
-        else
-        {
-            $data = "";
-
-            $stmt->bind_param("s", $id);
-
-            if (!$stmt->execute()) 
-            {
-                $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-                $txt .= "Execute failed: Statement to select client record by id - (".$id . ") - Errno: ";
-//              $txt .= $stmt->errno . " " . $stmt->error . " " . date("Y-d-m h:i:s", time()).PHP_EOL;
-                
-                fwrite($this->myfile, $txt);
-                fclose($this->myfile);
-            }
-
-            $res = $stmt->get_result();
-
-            $i = 0;
-            while ($row = $res->fetch_assoc()){
-          
-                $data[] = $row;
-
-                $i++;
-            }
-            return isset($data[0]) ? $data[0] : null;
-            
-            $stmt->close();           
-        }
     }
 
-
-//	name: select_by_ActiveDirectoryID
-//	date: 2018-06-11
-//	auth: VVenning
-//	desc: select by ActiveDirectoryID
-//	param: unique id
-	public function select_by_ActiveDirectoryID($AAD_identifier)
-	{
-        $stmt = $this->conn->prepare("SELECT * FROM ".CLIENTS_TABLE." WHERE AAD_identifier = ?");
-
-        if(!$stmt)
-        {            
-            $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-            $txt = "Failed prepare statement to select client record by AAD_identifier - ".$AAD_identifier." - ".date("Y-d-m h:i:s", time()).PHP_EOL;
-			
-            fwrite($this->myfile, $txt);
-            fclose($this->myfile);
-        }
-        else
-        {
-            $data = "";
-
-            $stmt->bind_param("s", $AAD_identifier);
-
-            if (!$stmt->execute()) 
-            {
-				$this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-				$txt .= "Execute failed: Statement to select client record by AAD_identifier - (".$AAD_identifier . ") - Errno: ";
-//				$txt .= $stmt->errno . " " . $stmt->error . " " . date("Y-d-m h:i:s", time()).PHP_EOL;
-				
-				fwrite($this->myfile, $txt);
-				fclose($this->myfile);
-            }
-
-            $res = $stmt->get_result();
-
-            $i = 0;
-            while ($row = $res->fetch_assoc()){
-          
-                $data[] = $row;
-
-                $i++;
-            }
-            return isset($data[0]) ? $data[0] : null;
-            
-            $stmt->close();           
-        }
-	}
-
-
-//	name: insert
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: insert for clients table
-	public function insert()
-	{
-        $stmt = $this->conn->prepare("INSERT INTO ".CLIENTS_TABLE." (partner_id, name, email, account_type, moodle_course_id, moodle_course_name, created) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-        if($stmt)
-        {
-        	$this->created = date("Y-m-d h:i:s", time());
-
-            $stmt->bind_param("isssiss", $this->partner_id, $this->name, $this->email, $this->account_type, $this->moodle_course_id, $this->moodle_course_name, $this->created);
-
-            $stmt->execute();
-            $this->last_inserted_id = $this->conn->insert_id;
-
-            $stmt->close();
-        }
-        else
-        {
-           $this->myfile = fopen("PartnerSignupDatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-            $txt = "Failed to insert client record: ". $this->name." - ".$this->email.time().PHP_EOL;
-            fwrite($this->myfile, $txt);
-            
-            fclose($this->myfile);
-        }
-	}
-
-
-//	name: deactivate
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: make a client inactive.  This changes a single value
-	public function deactivate()
-	{
-		//
-	}
-
-
-//	name: delete
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: delete for clients table.  WOn;t be used except in emergencies.  We deactivate, which is an update process
-	public function delete()
-	{
-		//
-	}
-
-//  name: updateUserCount
-//  date: 2018-02-25
-//  auth: VVenning
-//  desc: updateUserCount
-//  params: client_id, user_count
-//  2018-02-25 1400 VVenning - New function updateUserCount
-public function updateUserCount($client_id, $count)
-{
-    if( is_numeric($count) && is_numeric($client_id) )
+/*
+ *
+ */
+    public function __destruct()
     {
-        $stmt = $this->conn->prepare("UPDATE ".CLIENTS_TABLE." SET user_count = ? WHERE id = ?");
 
-        if($stmt)
+
+    }    
+
+/*    
+ *  name: prepareForSelect
+ *  desc: select for clients table.  prepare part of the query column by reference.  By passing by reference, I'm allowing myself multiple returns without having them in the same variable
+
+ *  @param $first_val   - Should I put in the WHERE, or use AND
+ *  @param $select_type - 's' or 'i'
+ *  @param $column      - column_name
+ *  @param $value       - column value
+ *  @param $arr_sql_where -  where clause
+ *  @param $params        - values to be searched by
+ *  @param $type          - 'sssiiiii'
+
+ *  @return void
+ */
+    private function prepareForSelect(&$arr_sql_where, &$params, &$type, $select_type, $value, $column, $first_val)
+    {
+    //    This needs to support search where column value in db equals null
+        if(trim($value) != null && strlen(trim($value)) > 0 )
         {
-            $data = "";
-
-            $stmt->bind_param("ii", $count, $client_id);
-
-            if($stmt->execute())
+            if($first_val === 1)
             {
-                return true;
+                array_push($arr_sql_where, " WHERE $column = ?");
             }
             else
             {
-                return false;
+                array_push($arr_sql_where, " AND $column = ?");
             }
-        }
-        else
-        {
-            $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
-
-            $txt = date("Y-d-m h:i:s", time()).": Failed prepare statement to update user_count by client_id - ".$client_id.PHP_EOL;
-            fwrite($this->myfile, $txt);
-            
-            fclose($this->myfile);
-            return false;
+                
+            array_push($params,$value);
+            $type  .= $select_type;
         }
     }
-    else
+    
+    
+    
+/*
+ *  name: select
+ *  desc: select for clients table
+
+ *  @param $arr_search_by - associative array of column names and values
+ *  @param $count         - 1 or null.  1 means this is a select count
+
+ *  @return int|array
+ *  2019-06-05 1646 VVenning - Added $count param for select count
+ */
+    public function select($arr_search_by=null, $count=null)
     {
-        $this->myfile = fopen("DatabaseErrLog.txt", "a") or die("Unable to open file!");
+        
+        $sql_statement = ($count===1) ? "SELECT COUNT(*) FROM ".CLIENTS_TABLE : "SELECT * FROM ".CLIENTS_TABLE;
+        $type          = "";
+        $params        = array();
+        $sql_stmt_arr  = array();
+        $count         = 0;
+        
+        $arr_sql_where = array();
+        
+        if(isset($arr_search_by) && count($arr_search_by) > 0)
+        {
+            foreach($arr_search_by as $key => $a_search_by)
+            {
+                $first_val = ($count == 0)?1:0;
+                
+             *  if($count == 0){$first_val = 1;    }else{$first_val = 0; }
 
-        $txt  = date("Y-d-m h:i:s", time());
-        $txt .= ": Attempted to update user_count by non numeric id or count.  client id: ".$client_id." count: ".$count.PHP_EOL;
-        fwrite($this->myfile, $txt);
-        fclose($this->myfile);
-        return false;
+                switch($key)
+                {
+                    case 'id':                $select_type = 'i'; break;
+                    case 'partner_id':        $select_type = 'i'; break;    
+
+                    case 'name':              $select_type = 's'; break;
+                    case 'email':             $select_type = 's'; break;
+                    case 'phone':             $select_type = 's'; break;
+                    case 'ext':               $select_type = 's'; break;
+                    case 'cell':              $select_type = 's'; break;
+
+                    case 'address':           $select_type = 's'; break;
+                    case 'address2':          $select_type = 's'; break;
+                    case 'city':              $select_type = 's'; break;
+                    case 'state':             $select_type = 's'; break;
+                    case 'zip':               $select_type = 's'; break;
+                    case 'link':              $select_type = 's'; break;
+
+                    case 'active':            $select_type = 'i'; break;
+                    case 'logo':              $select_type = 's'; break;
+                    case 'whitelabel':        $select_type = 'i'; break;
+                    case 'account_type':      $select_type = 's'; break;
+                    case 'dont_send_email':   $select_type = 'i'; break;
+                    case 'employee_count':    $select_type = 'i'; break;
+
+                    case 'created':           $select_type = 's'; break;
+                    case 'modified':          $select_type = 's'; break;
+                }
+                
+                $this->prepareForSelect( $arr_sql_where, $params, $type, $select_type, $a_search_by, $key, $first_val );
+                
+                $count++;
+            }            
+        }
+        $sql_statement .= implode(" ", $arr_sql_where);
+        $str_params = implode(",", $params);
+
+        return $this->executeQuery( $sql_statement, $type, $params, false );
+
+
     }
-}
 
-    /**
-     *  Udate for clients table.
-     *  Usage example :
-     *  $clients =  new m_clients();
-     *  $clients->name = 'name';
-     *  $clients->id = 1;
-     *  $clients->update();
-     *
-     * date: 2018-05-29, 2018-09-25
-     * auth: VVenning, Ruiz
-     * @return query
-     */
+/*
+ *  name: prepareForUpdate
+ *  desc: prepare part of the query column by reference
+
+ *  @param $update_type - 's' or 'i'
+ *  @param $column      - column_name
+ *  @param $value       - column value
+ *  @param $sql_stmt_arr  - array of columns to be updated, formatted for PDO
+ *  @param $params        - values to be inserted
+ *  @param $type          - concatented string of 's' and 'i', 'sssiiiii'
+
+ *  @return void
+
+ *  2019-06-05 1646 VVenning - Added $count param for selectcount
+ */    private function prepareForUpdate(&$sql_stmt_arr, &$params, &$type, $update_type, $value, $column)
+    {
+        if(trim($value) != null && strlen(trim($value)) > 0 )
+        {
+            array_push($sql_stmt_arr, " $column = ?");
+            array_push($params,$value);
+            $type  .= $update_type;
+        }
+    }
+/*
+ *  name: update
+ *  desc: clients table selected fields
+
+ *  Usage example :
+ *  $client =  new m_clients();
+ *  $client->name = 'name';
+ *  $client->id = 1;
+ *  $client->update();
+
+ *  @return query
+ *  2019-05-22 1315 VVenning - Only update values actually set
+ */
     public function update()
     {
         $sql_statement = "UPDATE ".CLIENTS_TABLE." SET ";
@@ -381,54 +207,35 @@ public function updateUserCount($client_id, $count)
         $params        = array();
         $sql_stmt_arr  = array();
 
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->partner_id, 'partner_id');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->AAD_identifier, 'AAD_identifier');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->name, 'name');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->email, 'email');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->account_type, 'account_type');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->active, 'active');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->dont_send_email, 'dont_send_email');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->demo, 'demo');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->is_real, 'is_real');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->user_count, 'user_count');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->phishing_count, 'phishing_count');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->display_ra_org, 'display_ra_org');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->display_policy, 'display_policy');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->link, 'link');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->logo, 'logo');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->logo_dir, 'logo_dir');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->display_intro_video, 'display_intro_video');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->custom_policies, 'custom_policies');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->admin_account, 'admin_account');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->user_account, 'user_account');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->details, 'details');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->domain, 'domain');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->no_of_employees, 'no_of_employees');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->dwba_date, 'dwba_date');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->file_key, 'file_key');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->last_login, 'last_login');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->risk_assessment_status, 'risk_assessment_status');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->moodle_course_id, 'moodle_course_id');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->moodle_course_name, 'moodle_course_name');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->pax8_partner_id, 'pax8_partner_id');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->pax8_customer_id, 'pax8_customer_id');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->pax8_product_code, 'pax8_product_code');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->pax8_subscription_id, 'pax8_subscription_id');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->demo_eva, 'demo_eva');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->total_breaches, 'total_breaches');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->is_eva, 'is_eva');
-        $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->is_dwba, 'is_dwba');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->auto_phish, 'auto_phish');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->white_list, 'white_list');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->one_time_campaign, 'one_time_campaign');
-       // $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->acknowledge_flag, 'acknowledge_flag');
+        if(isset($this->partner_id))       { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->partner_id, 'partner_id'); }
+        if(isset($this->name))             { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->first_name, 'name'); }
+        if(isset($this->email))            { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->email, 'email'); }
+        if(isset($this->phone))            { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->phone, 'phone'); }
+        if(isset($this->ext))            { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->ext, 'ext'); }
+        if(isset($this->cell))             { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->cell, 'cell'); }
+        
+        if(isset($this->address))          { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->address, 'address'); }
+        if(isset($this->address2))         { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->address, 'address2'); }
+        if(isset($this->city))             { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->city, 'city'); }
+        if(isset($this->state))            { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->state, 'state'); }
+        if(isset($this->zip))              { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->zip, 'zip'); }
+        if(isset($this->link))             { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 's',$this->link, 'link'); }
+
+        if(isset($this->active))           { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->active, 'active'); }
+        if(isset($this->logo))             { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->logo, 'logo');  }
+        if(isset($this->white_label))      { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->white_label, 'white_label');  }
+        if(isset($this->account_type))     { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->account_type, 'account_type');  }
+        if(isset($this->dont_send_email))  { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->dont_send_email, 'dont_send_email');  }
+
+        if(isset($this->employee_count))   { $this->prepareForUpdate($sql_stmt_arr, $params, $type, 'i',$this->employee_count, 'employee_count'); }
 
         // add modified date
         array_push($sql_stmt_arr, " modified = ? ");
         array_push($params,date("Y-m-d H:i:s"));
         $type  .= 's';
 
-        if(count($sql_stmt_arr) >= 1){
+        if(count($sql_stmt_arr) >= 1)
+        {
             $sql_statement   .=  implode(',',$sql_stmt_arr) ;
         }
 
@@ -437,236 +244,192 @@ public function updateUserCount($client_id, $count)
         $type            .= 'i';
         array_push($params,$this->id);
 
+//echo $sql_statement;die;
+
         return $this->executeQuery( $sql_statement, $type, $params, true );
 
     }
 
-    /**
-     * prepare part of the query column by reference
-     * @return void
-     */
-    private function prepareForUpdate(&$sql_stmt_arr, &$params, &$type,$update_type, $value, $column){
-        //if($value != null && strlen(trim($value)) > 0 ){
-         if(!empty($value) ||  $value  === 0 ){
-            array_push($sql_stmt_arr, " $column = ?");
-            array_push($params,$value);
-            $type  .= $update_type;
+/*
+ *  name: prepareForCreate
+ *  desc: prepare part of the query column by reference
+
+ *  @param $insert_type - 's' or 'i'
+ *  @param $column      - column_name
+ *  @param $value       - column value
+ *  @param $placeholder   - 
+ *  @param $$arr_columns  - array of columns to be updated
+ *  @param $arr_param     - values to be inserted
+ *  @param $type          - concatented string of 's' and 'i', 'sssiiiii'
+
+ *  @return void
+ */
+    private function prepareForCreate(&$placeholder, &$arr_columns, &$type, &$arr_param, $insert_type, $value, $column )
+    {
+        if(trim($value) != null && strlen(trim($value)) > 0 ) 
+        {
+            array_push($placeholder, '?');
+            array_push($arr_columns, $column);
+            array_push($type, $insert_type);
+            array_push($arr_param, $value);
         }
     }
 
-    /**
-     * Create new client specifically for Pax8
-     * @return query
-     */
-    public function createPax8Client()
-    {
+/*
+ *  name: create
+ *  desc: Create new client
 
-        $columns_arr   = [];
-        $type          = [];
-        $param_arr     = [];
+ *  Usage example :
+ *  $client =  new m_clients();
+ *  $client->name = 'name';
+ *  $client->id = 1;
+ *  $client->create();
+
+ *  @return query
+ */
+    public function create()
+    {
+        $arr_columns   = [];
+        $arr_type      = [];
+        $arr_param     = [];
         $placeholder   = [];
 
+        //create password
+        $readable_password = randomString(10);
+        $this->password   = password_hash($readable_password, PASSWORD_DEFAULT);
 
+        // create token
+        $hashed_password = str_replace(' ', '-', $this->password); // Replaces all spaces with hyphens.
+        $hashed_password = preg_replace('/[^A-Za-z0-9\-]/', '', $hashed_password); // Removes special chars.
+        $this->tokenhash = $hashed_password;
 
-        //columns that don't depend on API parameters, values are calculated or have a set of default
-        $this->user_count           = 5000;
-        $this->is_real              = 1;
-        $this->is_eva               = 1;
-        $this->active               = 1;
-        $this->account_type         = 'BPP'; // temporary default value
-        $this->user_count           = 1;
-        $this->admin_account        = randomString(10);
-        $this->user_account         = randomString(10);
-        $this->file_key             = randomString(10);
-        $this->moodle_course_id     = 5;
-        $this->moodle_course_name   = 'SEC-102';
-        $this->pax8_partner_id      = '';
-        $this->pax8_customer_id     = '';
-        $this->pax8_product_code    = 'BSNPv2'; // temporary default value
-        $this->pax8_subscription_id = '';
+        //create a screen name
+        $this->screen_name = 'user-'.randomString(7);
+        $this->active   = 1;
 
-        // columns that depends on API parameters
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->partner_id,'partner_id' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->name,'name' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->email,'email' );
+        if(isset($this->partner_id))       { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 'i',$this->partner_id, 'partner_id'); }
+        if(isset($this->name))             { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->name, 'name'); }
+        if(isset($this->email))            { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->email, 'email'); }
+        if(isset($this->phone))            { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->phone, 'phone'); }
+        if(isset($this->ext))              { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->ext, 'ext'); }
+        if(isset($this->cell))             { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->cell, 'cell'); }
+        
+        if(isset($this->address))          { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->address, 'address'); }
+        if(isset($this->address_2))        { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->address2, 'address2'); }
+        if(isset($this->city))             { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->city, 'city'); }
+        if(isset($this->state))            { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->state, 'state'); }
+        if(isset($this->zip))              { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->zip, 'zip'); }
+        if(isset($this->link))             { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->link, 'link'); }
 
-        //columns that don't depend on API parameters, values are calculated or have a set of default
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->is_eva,'is_eva' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->is_real,'is_real' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->active,'active' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->account_type,'account_type' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->user_count,'user_count' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->admin_account,'admin_account' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->user_account,'user_account' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->file_key,'file_key' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 'i',$this->moodle_course_id,'moodle_course_id' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->moodle_course_name,'moodle_course_name' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->pax8_partner_id,'pax8_partner_id' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->pax8_customer_id,'pax8_customer_id' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->pax8_product_code,'pax8_product_code' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',$this->pax8_subscription_id,'pax8_subscription_id' );
+        if(isset($this->active))           { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 'i',$this->active, 'active'); }
+        if(isset($this->logo))             { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->logo, 'logo'); }
+        if(isset($this->white_label))      { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->white_label, 'white_label'); }
+        if(isset($this->account_type))     { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->account_type, 'account_type'); }
+        if(isset($this->dont_send_email))  { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 'i',$this->dont_send_email, 'dont_send_email'); }
+        if(isset($this->employee_count))   { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',$this->employee_count, 'employee_count'); }
 
-        // created and modified dates
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',date( "Y-m-d H:i:s"),'created' );
-        $this->prepareForInsert($placeholder, $columns_arr, $type, $param_arr, 's',date( "Y-m-d H:i:s"),'modified' );
+        if(isset($this->created))          { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',date( "Y-m-d H:i:s"),'created' ); }
+        if(isset($this->modified))         { $this->prepareForCreate($placeholder, $arr_columns, $arr_type, $arr_param, 's',date( "Y-m-d H:i:s"),'modified' ); }
 
+        $sql_statement = "INSERT INTO ".CLIENTS_TABLE." ( ".implode(',',$arr_columns).") VALUES ( ".implode(',',$placeholder).")";
 
-        $sql_statement = "INSERT INTO ".CLIENTS_TABLE." ( ".implode(',',$columns_arr).") VALUES ( ".implode(',',$placeholder).")";
-
-        $this->executeQuery( $sql_statement,implode('',$type), $param_arr, true );
-
-        return $this->selectPax8ClientById($this->last_inserted_id);
-
-    }
-    /**
-     * prepare part of the insert query column by reference
-     * @return void
-     */
-    private function prepareForInsert(&$placeholder, &$columns_arr, &$type, &$param_arr, $insert_type, $value, $column ){
-        if(trim($value) != null && strlen(trim($value)) > 0 ) {
-            array_push($placeholder, '?');
-            array_push($columns_arr, $column);
-            array_push($type, $insert_type);
-            array_push($param_arr, $value);
-        }
+        $this->executeQuery( $sql_statement,implode('',$arr_type), $arr_param, true );
+        
+        $arrId = array('id' => $this->last_inserted_id);
+        
+        return $this->select($arrId);
+        
     }
 
-    /**
-     * Get clients of PAX8 by Id
-     * @return query
-     */
-    public function selectPax8ClientById($id)
+/*
+ *  name: deactivate
+ *  desc: make a client inactive.  This changes a single value
+ */
+    public function deactivate()
     {
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8' AND c.id = ?  ";
-        return $this->executeQuery( $sql_statement,'i', array($id), false );
+        //
     }
 
-    /**
-     * Get clients of PAX8 by subscription id
-     * @return query
-     */
-    public function selectPax8ClientBySubscriptionId($id)
+/*
+ *  name: delete
+ *  desc: delete for clients table.  WOn't be used except in emergencies.  We deactivate, which is an update process
+ */
+    public function delete()
     {
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8' AND c.pax8_subscription_id = ?  ";
-        return $this->executeQuery( $sql_statement,'i', array($id), false );
+        //
     }
 
-    /**
-     * Get clients of PAX8 by name
-     * @param  $name
-     * @param  $partner_id
-     * @return query
-     */
-    public function selectPax8ClientByName($name, $partner_id)
+/*
+ * name: executeQuery
+ * desc: This function will run a query
+ *
+ * @param  $sql_statement   (sql query)
+ * @param  $type            (sssii)
+ * @params $params          (should be array)
+ * @params $close           (select = false, updaten insert,delete = true)
+
+ *  @return array|error message to file
+
+ */
+    private function executeQuery($sql_statement, $type, $params, $close)
     {
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8' AND c.name = ? AND c.partner_id = ?  ";
-        return $this->executeQuery( $sql_statement,'si', array($name,$partner_id), false );
-    }
-
-
-    /**
-     * Get client of PAX8 by Multiple Ids
-     * @return query
-     */
-    public function selectPax8ClientByMultipleIds($ids, $sort_column = 'id')
-    {
-        if(is_array($ids) && count($ids) <=0){
-            return false;
-        }
-        $placeholders = implode(',',array_fill(0, count($ids), '?'));
-        $type = implode(array_fill(0, count($ids), 'i'));
-
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8' AND c.id IN ($placeholders) ORDER BY c.$sort_column";
-        return $this->executeQuery( $sql_statement,$type, $ids, false );
-    }
-
-    /**
-     * Get client of PAX8 by Multiple Ids
-     * @return query
-     */
-    public function selectPax8ClientByMultipleSubscriptionIds($ids, $sort_column = 'pax_subscription_id')
-    {
-        if(is_array($ids) && count($ids) <=0){
-            return false;
-        }
-        $placeholders = implode(',',array_fill(0, count($ids), '?'));
-        $type = implode(array_fill(0, count($ids), 'i'));
-
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8'AND c.pax8_subscription_id IN ($placeholders)  ORDER BY c.$sort_column";
-        return $this->executeQuery( $sql_statement,$type, $ids, false );
-    }
-
-    /**
-     * Get all clientss, default limit is 10 and default offset is 0
-     *
-     * @return query
-     */
-    public function selectAllPax8Client($offset,$max, $sort_column = 'id')
-    {
-        $sql_statement = "SELECT c.* FROM ".CLIENTS_TABLE." AS c, ".PARTNERS_TABLE." AS p WHERE c.partner_id = p.id and p.distributor = 'PAX8'  ORDER BY c.$sort_column LIMIT ?  OFFSET ?";
-        return $this->executeQuery( $sql_statement,'ii', array($max, $offset), false );
-    }
-
-    /**
-     * Get the last logo_dir and service_logo_dir
-     *
-     * @return query
-     */
-    public function getColumnMaxValue($column)
-    {
-        $sql_statement = "SELECT * FROM ".CLIENTS_TABLE." WHERE $column IS NOT NULL ORDER BY $column DESC LIMIT 1 ";
-        return $this->executeQuery( $sql_statement,'', array(), false );
-    }
-
-    /**
-     * This function will run a query
-     *
-     * @param  $sql_statement   (sql query)
-     * @param  $type            (sssii)
-     * @params $params          (should be array)
-     * @params $close           (select = false, updaten insert,delete = true)
-     *
-     * @return arrays
-     */
-    private function executeQuery($sql_statement, $type, $params, $close){
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-        try{
+        
+        try
+        {
             $stmt = $this->conn->prepare($sql_statement);
 
-            if(!empty($type) && !empty($params)){
+            if(!empty($type) && !empty($params))
+            {
                 $stmt->bind_param($type, ...$params);
             }
 
             $stmt->execute();
 
-            if($stmt){
-                if($close){
+            if($stmt)
+            {
+                if($close)
+                {
                     $result = $this->conn->affected_rows;
-                    if(strpos($sql_statement, 'INSERT') !== false){
+                    if(strpos($sql_statement, 'INSERT') !== false)
+                    {
                         $this->last_inserted_id = $this->conn->insert_id;
                     }
 
-                } else {
-                    $res    = $stmt->get_result();
+                }
+                else 
+                {
+                    $res = $stmt->get_result();
 
-                    if($res->num_rows > 1){
-                        $result = [];
-                        while ($obj = $res->fetch_object('m_clients')) {
+                    if($res->num_rows > 1)
+					{
+                        $result = array();
+
+                        while ($obj = $res->fetch_assoc()) 
+                        {
                             array_push($result, $obj);
                         }
-                    }else{
-                        $result = $res->fetch_object('m_clients');
+                    }
+                    else
+                    {
+                    //  $result = $res->fetch_object('m_clients');
+                        $result = $res->fetch_assoc();
                     }
                 }
                 $stmt->close();
                 return  $result;
             }
 
-        } catch (mysqli_sql_exception $e) {
-            if(isset($this->conn->log_file_path) && !empty($this->conn->log_file_path)){
+        } 
+        catch (mysqli_sql_exception $e) 
+        {
+            if(isset($this->conn->log_file_path) && !empty($this->conn->log_file_path))
+            {
                 $file = $_SERVER['DOCUMENT_ROOT'].'/'.$this->conn->log_file_path;
-            }else{
-                $file = $_SERVER['DOCUMENT_ROOT'].'/logs/database_error.txt';
+            }
+            else
+            {
+                $file = $_SERVER['DOCUMENT_ROOT'].REST_API_DATABASE_ERROR_LOG_PATH;
             }
 
             universal_log_it($file, "m_clients - ".$e->getMessage());
@@ -677,5 +440,3 @@ public function updateUserCount($client_id, $count)
     }
 
 }
-
-?>

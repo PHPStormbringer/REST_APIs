@@ -1,7 +1,6 @@
 <?php
 /* 
 name: m_partnerMessages.php
-date: 2018-08-26
 auth: VVenning
 desc: basic CRUD for m_partnerMessages table
 */
@@ -19,6 +18,11 @@ class m_partnerMessages
 	public  $arr_partner_messages;
 
 
+
+/*
+ *  name: __construct()
+ *  desc: initialize variables
+ */
     public function __construct()
     {
         $this->id = "";
@@ -34,11 +38,14 @@ class m_partnerMessages
 
     }
 
-//	name: selectByPartnerId
-//	date: 2018-08-26
-//	auth: VVenning
-//	desc: select_all for partner_messages table
-//	param: unique id
+/*
+ *  name: selectByPartnerId
+ *  desc: select_all for partner_messages table
+ 
+ *  @param partner_id int unique id in partner-messages table
+
+ *  @return array|error message to file
+ */
 	public function selectByPartnerId($partner_id=null)
 	{
 	//	This allows you to pass in partner_id or use the partner_id property
@@ -91,12 +98,14 @@ class m_partnerMessages
             fclose($this->myfile);
         }
 	}
+/*
+ *  name: selectByPartnerIdwithMessageType
+ *  desc: select_all for partner_messages table with text partner_message_type
 
-//	name: selectByPartnerIdwithMessageType
-//	date: 2018-11-06
-//	auth: VVenning
-//	desc: select_all for partner_messages table with text partner_message_type
-//	param: unique id
+ *  @param: $partner_id int unique id of partner
+
+ *  @return array|error message to file
+ */
     public function selectByPartnerIdwithMessageType($partner_id=null)
     {
     //	This allows you to pass in partner_id or use the partner_id property
@@ -104,7 +113,7 @@ class m_partnerMessages
 
         if(is_numeric($partner_id))
         {
-        //    $x  = "SELECT p.partner_id, p.client_id, t.id as message_type, t.message_type as message_type_label, p.subject, CONVERT(p.first_text USING utf8), p.url, CONVERT(p.second_text USING utf8) ";
+        // $x  = "SELECT p.partner_id, p.client_id, t.id as message_type, t.message_type as message_type_label, p.subject, CONVERT(p.first_text USING utf8), p.url, CONVERT(p.second_text USING utf8) ";
             $x  = "SELECT p.partner_id, p.client_id, t.id as message_type, t.message_type as message_type_label, p.subject, p.first_text, p.url, p.second_text ";
             $x .= "FROM ".PARTNER_MESSAGES_TABLE." p ";
             $x .= "JOIN ".PARTNER_MESSAGE_TYPES_TABLE." t on p.message_type = t.id WHERE ";
@@ -154,11 +163,14 @@ class m_partnerMessages
             fclose($this->myfile);
         }
     }
-//	name: insertMessage
-//	date: 2018-08-26
-//	auth: VVenning
-//	desc: insert for partner_messages table
+/*
+ *  name: insertMessage
+ *  desc: insert for partner_messages table
+ 
+ *  @param $arr_message array Specific messages to be displayed for a given white-labeled partner.
 
+ *  @return array|error message to file
+ */
 	public function insertMessage($arr_message=null)
 	{
 		$arr_message = $arr_message ? $arr_message : $this->arr_partner_messages;
@@ -202,31 +214,29 @@ class m_partnerMessages
         }
 	}
 
-//	name: update
-//	date: 2018-08-26
-//	auth: VVenning
-//	desc: update for partner_messages table.  I'm still thinking about this philosophically
+/*
+ *  name: update
+ *  desc: update for partner_messages table.  I'm still thinking about this philosophically
+ */
 	public function update()
 	{
 
 
 	}
 
-
-//	name: deactivate
-//	date: 2018-08-26
-//	auth: VVenning
-//	desc: make a partner inactive.  This changes a single value
+/*
+ *  name: deactivate
+ *  desc: make a partner inactive.  This changes a single value
+ */
 	public function deactivate()
 	{
 		//
 	}
 
-
-//	name: delete
-//	date: 2018-08-26
-//	auth: VVenning
-//	desc: delete for partner_messages table.  WOn;t be used except in emergencies.  We deactivate, which is an update process
+/*
+ *  name: delete
+ *  desc: delete for partner_messages table.  WOn;t be used except in emergencies.  We deactivate, which is an update process
+ */
 	public function delete()
 	{
 		//

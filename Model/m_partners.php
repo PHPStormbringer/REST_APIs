@@ -30,21 +30,25 @@ class m_partners implements databaseModel
 
     public $last_inserted_id;
     public $conn;
-	
-//	name: select
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: slect for partners table
+
+/*	
+ *  name: select
+ *  desc: slect for partners table
+ */
 	public function select()
 	{
 		//
 	}
 
+/*
+ *  name: select_all
+ *  desc: select_all for partners table
 
-//	name: select_all
-//	date: 2018-08-04
-//	auth: VVenning
-//	desc: select_all for partners table
+ *  @param active bool is this an active partner?
+
+ *  @return array|error message to file
+
+ */
 	public function select_all($active=null)
 	{
 
@@ -102,11 +106,14 @@ class m_partners implements databaseModel
         }
 	}
 
-//	name: select_byID
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: select by id for partners table
-//	param: unique id
+/*
+ *  name: select_byID
+ *  desc: select by id for partners table
+ *  
+ *  @param unique id
+ *
+ *  @return array|error message to file
+ */
 	public function select_byID($id=null)
 	{
         $id = $id ? $id : $this->id;
@@ -154,10 +161,21 @@ class m_partners implements databaseModel
 	    }
 	}
 
-//	name: insert
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: insert for partners table
+/*
+ *  name: insert
+ *  desc: insert for partners table
+ *
+ *  Usage example :
+ *  $partner =  new m_users();
+ *  $partner->name = 'name';
+ *  $partner->email = 'partner@company.com';
+ *  $partner->link = 'website url';
+ *  $partner->logo = 'path/to/go';
+ *  $partner->insert();
+
+ *  @return int|error message to file
+ *
+ */
 	public function insert()
 	{
 
@@ -190,41 +208,38 @@ class m_partners implements databaseModel
 	}
 
 
-
-//	name: deactivate
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: make a partner inactive.  This changes a single value
+/*
+ *  name: deactivate
+ *  desc: make a partner inactive.  This changes a single value
+ */
 	public function deactivate()
 	{
 		//
 	}
 
-
-//	name: delete
-//	date: 2018-05-29
-//	auth: VVenning
-//	desc: delete for partners table.  WOn;t be used except in emergencies.  We deactivate, which is an update process
+/*
+ *  name: delete
+ *  desc: delete for partners table.  WOn;t be used except in emergencies.  We deactivate, which is an update process
+ */
 	public function delete()
 	{
 		//
 	}
 
-
-    /**
-     * Update partners table
-     * Usage example :
-     *  $partner =  new m_partner();
-     *  $partner->name = 'name';
-     *  $partner->id = 1;
-     *  $partner->update();
-     *
-     * date: 2018-05-29, 2018-09-18
-     * auth: VVenning, Ruiz
-     * @return query
-     */
+/*
+ *  name: update
+ *  desc: Update partners table
+ * 
+ *  Usage example :
+ *  $partner =  new m_partner();
+ *  $partner->name = 'name';
+ *  $partner->id = 1;
+ *  $partner->update();
+ *
+ *  @return query
+ */
     public function update()
-    {
+    { 
         $sql_statement = "UPDATE ".PARTNERS_TABLE." SET ";
         $type          = "";
         $params        = array();
@@ -265,10 +280,19 @@ class m_partners implements databaseModel
 
     }
 
-    /**
-     * prepare part of the query column by reference
-     * @return void
-     */
+/*
+ *  name: prepareForUpdate
+ *  desc: prepare part of the query column by reference
+ * 
+ *  @param $sql_stmt_arr array 
+ *  @param $params array
+ *  @param $type string
+ *  @param $update_type
+ *  @param $value int|string
+ *  @param $column string
+ *
+ *  @return void
+ */
     private function prepareForUpdate(&$sql_stmt_arr, &$params, &$type,$update_type, $value, $column){
         if(trim($value) != null && strlen(trim($value)) > 0 ){
             array_push($sql_stmt_arr, " $column = ?");
@@ -278,16 +302,17 @@ class m_partners implements databaseModel
     }
 
  
-    /**
-     * This function will run a query
-     *
-     * @param  $sql_statement   (sql query)
-     * @param  $type            (sssii)
-     * @params $params          (should be array)
-     * @params $close           (select = false, updaten insert,delete = true)
-     *
-     * @return arrays
-     */
+/*
+ *  name: executeQuery
+ *  desc: This function will run a query
+ *
+ *  @param  $sql_statement   (sql query)
+ *  @param  $type            (sssii)
+ *  @params $params          (should be array)
+ *  @params $close           (select = false, updaten insert,delete = true)
+
+ *  @return array|null
+ */
     private function executeQuery($sql_statement, $type, $params, $close){
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 		
@@ -337,8 +362,4 @@ class m_partners implements databaseModel
         }
 
     }
-
-
 }
-
-?>
